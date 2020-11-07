@@ -50,14 +50,14 @@ class TrunkedBodyParser {
                 this.current = this.WAITING_NEW_LENGTH
                 // this.current = this.WAITING_LENGTH
             } else {
-                // console.log(char, 'push')
+                console.log(char, 'push')
                 this.content.push(char)
             }
         } else if (this.current === this.WAITING_NEW_LENGTH) {
             if (char === '\n') {
                 this.current = this.WAITING_NEW_LENGTH_END
             } else if (char === '0') {
-                // console.log('char === 0')
+                console.log('char === 0')
                 this.isFinished = true
             }
         } else if (this.current === this.WAITING_NEW_LENGTH_END) {
@@ -102,7 +102,7 @@ class ResponseParser {
     receive(string) {
         for (let i = 0; i < string.length; i++) {
             const element = string[i];
-            console.log(element, '---', element.charCodeAt(), "\n".charCodeAt()) // 体验一下输出
+            console.log(JSON.stringify(element), '---', element.charCodeAt(), "\n".charCodeAt()) // 体验一下输出
             this.receiveChar(element)
         }
     }
@@ -129,9 +129,13 @@ class ResponseParser {
                 this.current = this.WAITING_HEADER_SPACE; // 冒号后面空格
             } else if (char === "\r") { // 如果headername 第一个字符遇到了\r，此时没有header部分
                 this.current = this.WAITING_HEADER_BLOCK_END // 吃掉一个回车\n
-                if (this.headers['Transfer-Encoding'] === 'chunked') {
-                    this.bodyParser = new TrunkedBodyParser()
+                if (this.headers['Transfer-Encoding'] === 'chunked' || this.headers['transfer-encoding'] === 'chunked') {
+                    console.log("Transfer-Encoding => chunked")
+                    this.bodyParser = new TrunkedBodyParser
                 }
+                //  else if (this.statusLine.match(/[404]+/)) {
+                //     this.bodyParser = new TrunkedBodyParser
+                // }
             }
             //  else if (char === "\n") {
 
@@ -215,11 +219,11 @@ ${this.bodyText}\r\n`
                 connection.write(request)
             }
             connection.on('data', (data) => {
+                console.log(data.toString(), 'Response');
                 parser.receive(data.toString())
 
                 // fs.writeFileSync('./output.json', JSON.stringify(parser.headers))
 
-                // console.log(data.toString(), 'Response');
                 if (parser.isFinished) {
                     resolve(parser.response)
                 }
@@ -236,15 +240,28 @@ ${this.bodyText}\r\n`
 
 void async function () {
     let req = new Request({
-        methods: 'POST',
-        host: "127.0.0.1",
-        port: 8080,
-        path: "/",
+        // methods: 'GET',
+        // host: "127.0.0.1",
+        // port: 8080,
+        // path: "/",
+        methods: 'GET',
+        host: "api.jirengu.com",
+        port: 80,
+        path: "/getWeather.php",
         headers: {
-            ['X-Foo2']: 'customed',
-            // ["Content-Type"]: "application/json",
+            // ['X-Foo2']: 'customed',
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+            "Accept-Encoding": "deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "Connection": "keep-alive",
+            "Host": "api.jirengu.com",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "none",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63"
         },
-        body: `<div>哈哈</div>`
+        // body: `<div>哈哈</div>`
         // {
         //     name: 1,
         //     data: {

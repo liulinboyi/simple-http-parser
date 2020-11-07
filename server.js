@@ -1,63 +1,25 @@
 const http = require('http');
-const server = http.createServer((req, res) => {
+const request = require('./proxy.js');
+const server = http.createServer(async (req, res) => {
     console.log('接受到请求')
     console.log(req.headers, '请求')
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('X-Foo', 'bar');
+    // res.setHeader('Content-Type', 'text/html');
+    // res.setHeader('X-Foo', 'bar');
     // res.writeHead(200, { 'Content-Type': 'text/plain' });
+    let body = await request({
+        methods: 'GET',
+        host: "api.jirengu.com",
+        port: 80,
+        path: "/getWeather.php",
+    })
+    Object.keys(body.headers).forEach(item => {
+        res.setHeader(item, body.headers[item])
+    })
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(
         // `hello http 哈哈`
-        JSON.stringify({
-            name: 1,
-            data: {
-                id: 1,
-                title: "测试HTTP",
-                content: `爱范儿此前一篇文章提到，全球的数据储存很快就会亮出「储存空间不足」的预警，人们开始追求超高的储存密度和永恒的储存时间，其中微软 Project Silica 项目中的「玻璃光盘」以持续使用上千年。
-
-                这只是微软数据储存计划的一部分，去年被微软收购的软件源代码托管服务平台 GitHub，最近也公布了一项代码存档计划 Arctic Code Vault，要把开源软件代码埋藏在北极的数百米地底下，至少保存 1000 年。
-                
-                之前的文章里介绍过，但现在可用的储存介质最长的寿命最多才约 60 年，像「玻璃光盘」和 DNA 存储这些新兴储存介质距离成熟商用还有很长的距离，那么 GitHub 要用什么储存设备将代码存档上千年后还能被读取呢？
-                
-                ▲ 图片来自：Digi.no
-                
-                答案是胶片，GitHub 采用的是挪威公司 Piql AS 制造的一种表面有氧化铁粉涂层的胶片，据称这这种叫胶片在正常条件下能保存 750 年，如果在寒冷、干燥、低氧的洞穴能保存 2000 年。
-                
-                从 2020 年 2 月 2 日，GitHub 为所有的公共储存库生成快照，经过处理后以 QR 码（二维码）的形式编码储存在一卷 3500 英尺（1066.8 米）长的胶卷上，然后存放在挪威斯瓦尔巴特群岛（Svalbard）一座废弃的矿井中。
-                
-                斯瓦尔巴群岛位于挪威大陆与北极点两者之间，被称为「世界最北的城市」，寒冷的环境有利于延长胶片的存储寿命。而且根据《斯瓦尔巴条约》，这个地区为永久非军事区域，这意味不会因为战争等原因导致数据损毁丢失。
-                
-                GitHub 认为开源代码现代文明的「隐藏基石」， 而 Arctic Code Vault  计划就是为了将来即使人类文明因为自然灾害或战争几乎毁灭，子孙后代也可以通过这些开源代码更快地重建文明。
-                
-                其实在斯瓦尔巴特群岛，还有一个被成为「全球农业诺亚方舟」的斯瓦尔巴全球种子库，储存了 4000 个人类赖以生存的农作物的 86 万份种子备份，以防止人类在面临大规模的灾害时永远丧失某些粮食的基因。
-                
-                ▲斯瓦尔巴全球种子库. 图片来自：The Verge
-                
-                看起来，GitHub 希望通过 Arctic Code Vault 打造全球代码的诺亚方舟。
-                
-                在几周之前，GitHub 的首席执行官 Nat Friedman 已经来到了储存代码的档案馆，据 Nat Friedman 介绍，GitHub 将在在这里存放 200 个胶片盘片，每个盘片上储存 120 GB 的开源软件代码，首个盘片储存 Linux、Android 操作系统并记录超过 6000 个重要的开源应用程序。
-                
-                可是即便这些胶片可以储存上千年，如果 1000 年后的人无法理解这些代码，那也没有意义，就像我们今天依然没有完全解读出古埃及象形文字的含义。
-                
-                为了确保后人顺利解码这些代码，GitHub 成立了一个咨询小组，成员包括人类学家、考古学家、历史学家、语言学家以及档案科学、未来主义等方面的专家，力求把存档指南写得通俗易懂。
-                
-                整套存档指南 QR 解码，文件格式、字符编码和其他重要元数据的技术指南，可以帮助多年之后的人类快速将原始数据转换为源代码。
-                
-                正如 GitHub 所说的，开源代码是全世界人类的共同财产，这个代码存档计划对于人类文明的延续具有重大价值。
-                
-                古罗马人 2000 多年前建造的混凝土海墙保存至今，而现代的钢筋混凝土海堤只能用几十年，很长时间以来都是建筑界的一个谜，直到 2017 年科学家才利用先进的技术将这种混凝土的配方破解。
-                
-                ▲图片来自：BBC
-                
-                其实不用上千年，源代码的存档对现在的开发者来说也很重要。前段时间暴雪旗下的游戏《暗黑破坏神 2》原创团队成员 Max Schaefer 透露，由于这款游戏的源代码和全部的备份都丢失，几乎无法重制一个《暗黑破坏神 2》，他们只能从头开始制作。
-                
-                互联网诞生不过 50 年，但各种软件已经和我们的生活工作密不可分，随着人工智能的兴起，人类社会的经济、工业、医疗、军事等体系都离不开算法中的源代码。
-                \r\n'0'0
-                在数百年后，今天的开源代码或许也会成为和巴黎圣母院、蒙娜丽莎名画一样重要的世界文化遗产。
-                \r\n'0'0`
-            }
-        })
-    );
+        JSON.stringify(body.body)
+    )
 });
 server.listen(8080, () => {
     console.log(`120.0.0.1:8080`)
