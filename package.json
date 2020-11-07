@@ -1,0 +1,15 @@
+{
+  "name": "http",
+  "version": "1.0.0",
+  "description": "a simple http parser with javascript",
+  "main": "client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node server.js",
+    "client": "node client.js",
+    "start": "npm run serve | npm run client"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
