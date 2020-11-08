@@ -8,6 +8,8 @@ class TrunkedBodyParser {
         this.READING_TRUNK = 2;
         this.WAITING_NEW_LENGTH = 3;
         this.WAITING_NEW_LENGTH_END = 4;
+        this.WAITING_END = 5;
+        this.count = 0;
         this.isFinished = false;
         this.length = 0; // 计数器，留下的trunk
         this.content = [] // 用数组，字符串做加法运算，性能差
@@ -50,15 +52,28 @@ class TrunkedBodyParser {
                 this.current = this.WAITING_NEW_LENGTH
                 // this.current = this.WAITING_LENGTH
             } else {
-                console.log(char, 'push')
+                // console.log(char, 'push')
                 this.content.push(char)
             }
         } else if (this.current === this.WAITING_NEW_LENGTH) {
             if (char === '\n') {
                 this.current = this.WAITING_NEW_LENGTH_END
             } else if (char === '0') {
-                console.log('char === 0')
-                this.isFinished = true
+                // console.log('char === 0')
+                this.current = this.WAITING_END;
+                // this.isFinished = true
+            }
+        } else if (this.current === this.WAITING_END) {
+            if (char === '\r') {
+                // console.log('\\r', 1)
+            } else if (char === '\n') {
+                // console.log('\\n', 1)
+                this.count++
+                // console.log(this.count, 'count')
+                if (this.count === 2) {
+                    console.log('结束')
+                    this.isFinished = true
+                }
             }
         } else if (this.current === this.WAITING_NEW_LENGTH_END) {
             if (char === '\n') {
