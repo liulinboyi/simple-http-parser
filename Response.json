@@ -1,15 +1,1 @@
-{
-    "statusCode": "200",
-    "statusText": "OK",
-    "headers": {
-        "Server": "nginx",
-        "Date": "Sun, 08 Nov 2020 06:24:12 GMT",
-        "Content-Type": "text/html",
-        "Transfer-Encoding": "chunked",
-        "Connection": "keep-alive",
-        "Access-Control-Allow-Origin": "*",
-        "Accept-Encoding": "utf-8",
-        "Via": "3832"
-    },
-    "body": "{\"error\":0,\"status\":\"success\",\"date\":\"2020-11-08\",\"results\":[{\"currentCity\":\"石家庄市\",\"pm25\":\"106\",\"index\":[],\"weather_data\":[{\"date\":\"周三 09月16日 (实时：25℃)\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"西北风3-4级\",\"temperature\":\"27 ~ 16℃\"},{\"date\":\"周四\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"北风3-4级\",\"temperature\":\"27 ~ 18℃\"},{\"date\":\"周五\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"北风3-4级\",\"temperature\":\"29 ~ 17℃\"},{\"date\":\"周六\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"南风微风\",\"temperature\":\"30 ~ 18℃\"}]}]}"
-}
+{"statusCode":"200","statusText":"OK","headers":{"Server":"nginx","Date":"Mon, 09 Nov 2020 10:36:26 GMT","Content-Type":"text/html","Transfer-Encoding":"chunked","Connection":"keep-alive","Access-Control-Allow-Origin":"*","Accept-Encoding":"utf-8","Via":"3832"},"body":"{\"error\":0,\"status\":\"success\",\"date\":\"2020-11-09\",\"results\":[{\"currentCity\":\"石家庄市\",\"pm25\":\"106\",\"index\":[],\"weather_data\":[{\"date\":\"周三 09月16日 (实时：25℃)\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"西北风3-4级\",\"temperature\":\"27 ~ 16℃\"},{\"date\":\"周四\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"北风3-4级\",\"temperature\":\"27 ~ 18℃\"},{\"date\":\"周五\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"北风3-4级\",\"temperature\":\"29 ~ 17℃\"},{\"date\":\"周六\",\"dayPictureUrl\":\"http://api.map.baidu.com/images/weather/day/qing.png\",\"nightPictureUrl\":\"http://api.map.baidu.com/images/weather/night/qing.png\",\"weather\":\"晴\",\"wind\":\"南风微风\",\"temperature\":\"30 ~ 18℃\"}]}]}"}

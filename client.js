@@ -3,79 +3,112 @@ const net = require('net');
 
 class TrunkedBodyParser {
     constructor() {
-        this.WAITING_LENGTH = 0;
-        this.WAITING_LENGTH_LINE_END = 1;
-        this.READING_TRUNK = 2;
-        this.WAITING_NEW_LENGTH = 3;
-        this.WAITING_NEW_LENGTH_END = 4;
-        this.WAITING_END = 5;
-        this.count = 0;
-        this.isFinished = false;
-        this.length = 0; // 计数器，留下的trunk
-        this.content = [] // 用数组，字符串做加法运算，性能差
-        this.current = this.WAITING_LENGTH;
+        this.WAITING_LENGTH = 0
+        this.WAITING_LENGTH_LINE_END = 1
+        this.READING_TRUNK = 2
+        this.WAITING_NEW_LINE = 3
+        this.WAITING_NEW_LINE_END = 4
+
+        this.length = 0
+        this.content = []
+        this.isFinished = false
+        this.current = this.WAITING_LENGTH
     }
 
-    getLength(str) {
-        var len = 0;
-        for (var i = 0; i < str.length; i++) {
-            if (str.charCodeAt(i) > 127 || str.charCodeAt(i) == 94) {
-                len += 2;
-            } else {
-                len++;
+    /**
+     * 所占字节数
+     *
+     * UTF-8 一种可变长度的Unicode编码格式，使用一至四个字节为每个字符编码（Unicode在范围 D800-DFFF 中不存在任何字符）
+     * 000000 - 00007F(128个代码)      0zzzzzzz(00-7F)                             一个字节
+     * 000080 - 0007FF(1920个代码)     110yyyyy(C0-DF) 10zzzzzz(80-BF)             两个字节
+     * 000800 - 00D7FF
+     * 00E000 - 00FFFF(61440个代码)    1110xxxx(E0-EF) 10yyyyyy 10zzzzzz           三个字节
+     * 010000 - 10FFFF(1048576个代码)  11110www(F0-F7) 10xxxxxx 10yyyyyy 10zzzzzz  四个字节
+     * {@link https://zh.wikipedia.org/wiki/UTF-8}
+     *
+     * UTF-16 编码65535以内使用两个字节编码，超出65535的使用四个字节（JS内部，字符储存格式是：UCS-2——UTF-16的子级）
+     * 000000 - 00FFFF  两个字节
+     * 010000 - 10FFFF  四个字节
+     * {@link https://zh.wikipedia.org/wiki/UTF-16}
+     *
+     * GBK(ASCII的中文扩展) 除了0~126编号是1个字节之外，其他都2个字节（超过65535会由2个字显示）
+     * {@link https://zh.wikipedia.org/wiki/汉字内码扩展规范}
+     *
+     * @param  {String} str
+     * @param  {String} [charset= 'gbk'] utf-8, utf-16
+     * @return {Number}
+     */
+    sizeofByte(str, charset = 'utf-8') {
+        let total = 0
+        let charCode
+
+        charset = charset.toLowerCase()
+
+        if (charset === 'utf-8' || charset === 'utf8') {
+            for (let i = 0, len = str.length; i < len; i++) {
+                charCode = str.codePointAt(i)
+
+                if (charCode <= 0x007f) {
+                    total += 1
+                } else if (charCode <= 0x07ff) {
+                    total += 2
+                } else if (charCode <= 0xffff) {
+                    total += 3
+                } else {
+                    total += 4
+                    i++
+                }
             }
+        } else if (charset === 'utf-16' || charset === 'utf16') {
+            for (let i = 0, len = str.length; i < len; i++) {
+                charCode = str.codePointAt(i)
+
+                if (charCode <= 0xffff) {
+                    total += 2
+                } else {
+                    total += 4
+                    i++
+                }
+            }
+        } else {
+            total = str.replace(/[^\x00-\xff]/g, 'aa').length
         }
-        return len;
+
+        return total
     }
 
     receiveChar(char) {
-        // console.log(JSON.stringify(char))
         if (this.current === this.WAITING_LENGTH) {
             if (char === '\r') {
-                // if (this.length === 0) { // 读到length为0
-                //     this.isFinished = true
-                // }
+                if (this.length === 0) {
+                    this.isFinished = true
+                }
                 this.current = this.WAITING_LENGTH_LINE_END
             } else {
                 this.length *= 16
-                this.length += parseInt(char, 16) // char.charCodeAt(0) - '0'.charCodeAt(0)
+                this.length += parseInt(char, 16)
+                console.log(this.length)
             }
         } else if (this.current === this.WAITING_LENGTH_LINE_END) {
-            // console.log(JSON.stringify(char))
             if (char === '\n') {
                 this.current = this.READING_TRUNK
             }
         } else if (this.current === this.READING_TRUNK) {
-            if (char === '\r') {
-
-            } else if (char === '\n') {
-                this.current = this.WAITING_NEW_LENGTH
-                // this.current = this.WAITING_LENGTH
+            if (this.length === 0) {
+                this.current = this.WAITING_NEW_LINE
             } else {
-                // console.log(char, 'push')
                 this.content.push(char)
+                let count = this.sizeofByte(char)
+                console.log(count, 'count')
+                this.length = this.length - count
+                console.log(this.length, '剩余长度')
             }
-        } else if (this.current === this.WAITING_NEW_LENGTH) {
-            if (char === '\n') {
-                this.current = this.WAITING_NEW_LENGTH_END
-            } else if (char === '0') {
-                // console.log('char === 0')
-                this.current = this.WAITING_END;
-                // this.isFinished = true
-            }
-        } else if (this.current === this.WAITING_END) {
+
+        } else if (this.current === this.WAITING_NEW_LINE) {
             if (char === '\r') {
-                // console.log('\\r', 1)
-            } else if (char === '\n') {
-                // console.log('\\n', 1)
-                this.count++
-                // console.log(this.count, 'count')
-                if (this.count === 2) {
-                    console.log('结束')
-                    this.isFinished = true
-                }
+                this.current = this.WAITING_NEW_LINE_END
             }
-        } else if (this.current === this.WAITING_NEW_LENGTH_END) {
+        } else if (this.current === this.WAITING_NEW_LINE_END) {
             if (char === '\n') {
                 this.current = this.WAITING_LENGTH
             }
